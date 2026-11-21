@@ -916,11 +916,20 @@ class TestMaskedLongitudeOperators(MaskedOperatorTests, LongitudeSetup):
 
 
 class TestMaskedArrayMethods(MaskedArraySetup):
-    def test_round(self):
-        # Goes via ufunc, hence easy.
-        mrc = self.mc.round()
-        expected = Masked(self.c.round(), self.mask_c)
+    @pytest.mark.parametrize("decimals", (0, 1))
+    def test_round(self, decimals):
+        mrc = self.mc.round(decimals)
+        expected = Masked(self.c.round(decimals), self.mask_c)
         assert_masked_equal(mrc, expected)
+
+    def test_round_inplace(self):
+        expected = Masked(self.c.round(1), self.mask_c)
+        out = Masked(np.zeros_like(self.c))
+        result = self.mc.round(1, out=out)
+        assert result is out
+        assert_masked_equal(out, expected)
+        with pytest.raises(TypeError):
+            self.mc.round(1, out=np.zeros(self.c.shape))
 
     @pytest.mark.parametrize("axis", (0, 1, None))
     def test_sum(self, axis):

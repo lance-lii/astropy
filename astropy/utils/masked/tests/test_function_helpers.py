@@ -675,9 +675,11 @@ class TestMethodLikes(MaskedArraySetup):
 
     def test_round(self):
         self.check(np.round, method="round")
+        self.check(np.round, decimals=1, method="round")
 
     def test_around(self):
         self.check(np.around, method="round")
+        self.check(np.around, decimals=1, method="round")
 
     def test_clip(self):
         self.check(np.clip, 2.0, 4.0)

@@ -1280,6 +1280,23 @@ class MaskedNDArray(Masked, np.ndarray, base_cls=np.ndarray, data_cls=np.ndarray
             np.minimum(out, dmax, out=out, where=True if mmax is None else ~mmax)
         return masked_out
 
+    def round(self, decimals=0, out=None):
+        """Evenly round to the given number of decimals.
+
+        Like `~numpy.round`, with the mask of the input array propagated.
+        """
+        # Cannot use ndarray.round, since for decimals != 0 it internally
+        # calls ufuncs with an unmasked output, which raises TypeError.
+        if out is None:
+            return Masked(self.unmasked.round(decimals), self.mask.copy())
+
+        if not isinstance(out, Masked):
+            raise TypeError("cannot write to unmasked output")
+
+        self.unmasked.round(decimals, out=out.unmasked)
+        out.mask[...] = self.mask
+        return out
+
     def mean(self, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         # Implementation based on that in numpy/core/_methods.py
         # Cast bool, unsigned int, and int to float64 by default,
