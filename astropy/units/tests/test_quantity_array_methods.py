@@ -183,6 +183,12 @@ class TestQuantityStatsFuncs:
         q1 = np.array([1.0, 2.0, 3.0]) * u.m
         assert_array_equal(np.std(q1, where=q1 < 3 * u.m), 0.5 * u.m)
 
+    def test_std_mean(self):
+        q1 = np.array([1.0, 2.0]) * u.m
+        assert_array_equal(q1.std(mean=100 * u.cm), np.sqrt(0.5) * u.m)
+        with pytest.raises(u.UnitsError):
+            q1.std(mean=1 * u.s)
+
     def test_var(self):
         q1 = np.array([1.0, 2.0]) * u.m
         assert_array_equal(np.var(q1), 0.25 * u.m**2)
@@ -197,6 +203,10 @@ class TestQuantityStatsFuncs:
     def test_var_where(self):
         q1 = np.array([1.0, 2.0, 3.0]) * u.m
         assert_array_equal(np.var(q1, where=q1 < 3 * u.m), 0.25 * u.m**2)
+
+    def test_var_mean(self):
+        q1 = np.array([1.0, 2.0]) * u.m
+        assert_array_equal(q1.var(mean=100 * u.cm), 0.5 * u.m**2)
 
     def test_median(self):
         q1 = np.array([1.0, 2.0, 4.0, 5.0, 6.0]) * u.m

@@ -260,6 +260,8 @@ def _quantity_out_as_array(out):
 def nanvar(a, axis=None, dtype=None, out=None, ddof=0, keepdims=np._NoValue, **kwargs):
     a = _as_quantity(a)
     out_array = None if out is None else _quantity_out_as_array(out)
+    if "mean" in kwargs:
+        kwargs["mean"] = a._to_own_unit(kwargs["mean"], check_precision=False)
     return (
         (a.view(np.ndarray), axis, dtype, out_array, ddof, keepdims),
         kwargs,
@@ -272,6 +274,8 @@ def nanvar(a, axis=None, dtype=None, out=None, ddof=0, keepdims=np._NoValue, **k
 def nanstd(a, axis=None, dtype=None, out=None, ddof=0, keepdims=np._NoValue, **kwargs):
     a = _as_quantity(a)
     out_array = None if out is None else _quantity_out_as_array(out)
+    if "mean" in kwargs:
+        kwargs["mean"] = a._to_own_unit(kwargs["mean"], check_precision=False)
     return (
         (a.view(np.ndarray), axis, dtype, out_array, ddof, keepdims),
         kwargs,

@@ -1072,6 +1072,13 @@ class TestReductionLikeFunctions(InvariantUnitTestSetup):
         expected = np.var(self.q.value) * self.q.unit**2
         assert np.all(o == expected)
 
+    @pytest.mark.parametrize("func, power", [(np.std, 1), (np.var, 2)])
+    def test_std_var_mean(self, func, power):
+        mean = self.q.mean(axis=1, keepdims=True)
+        o = func(self.q, axis=1, mean=mean)
+        expected = func(self.q.value, axis=1, mean=mean.value) * self.q.unit**power
+        assert np.all(o == expected)
+
     def test_median(self):
         self.check(np.median)
 
@@ -1258,6 +1265,14 @@ class TestNanFunctions(InvariantUnitTestSetup):
         assert o2 is out
         assert o2.unit == u.dimensionless_unscaled
         assert o2 == np.nanvar(self.q.value)
+
+    @pytest.mark.parametrize("func, power", [(np.nanstd, 1), (np.nanvar, 2)])
+    def test_nanstd_nanvar_mean(self, func, power):
+        mean = np.nanmean(self.q, axis=1, keepdims=True)
+        o = func(self.q, axis=1, mean=mean.to(u.cm))
+        expected = func(self.q.value, axis=1, mean=mean.value)
+        assert o.unit == self.q.unit**power
+        assert_allclose(o.value, expected)
 
     def test_nanprod(self):
         with pytest.raises(u.UnitsError):

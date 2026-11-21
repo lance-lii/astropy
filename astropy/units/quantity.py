@@ -2083,8 +2083,19 @@ class Quantity(np.ndarray):
         return self._wrap_function(np.trace, offset, axis1, axis2, dtype, out=out)
 
     def var(
-        self, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True
+        self,
+        axis=None,
+        dtype=None,
+        out=None,
+        ddof=0,
+        keepdims=False,
+        *,
+        where=True,
+        mean=None,
     ):
+        kwargs = {}
+        if mean is not None:
+            kwargs["mean"] = self._to_own_unit(mean, check_precision=False)
         return self._wrap_function(
             np.var,
             axis,
@@ -2094,13 +2105,32 @@ class Quantity(np.ndarray):
             keepdims=keepdims,
             where=where,
             unit=self.unit**2,
+            **kwargs,
         )
 
     def std(
-        self, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True
+        self,
+        axis=None,
+        dtype=None,
+        out=None,
+        ddof=0,
+        keepdims=False,
+        *,
+        where=True,
+        mean=None,
     ):
+        kwargs = {}
+        if mean is not None:
+            kwargs["mean"] = self._to_own_unit(mean, check_precision=False)
         return self._wrap_function(
-            np.std, axis, dtype, out=out, ddof=ddof, keepdims=keepdims, where=where
+            np.std,
+            axis,
+            dtype,
+            out=out,
+            ddof=ddof,
+            keepdims=keepdims,
+            where=where,
+            **kwargs,
         )
 
     def mean(self, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
